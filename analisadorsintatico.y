@@ -21,6 +21,9 @@ int control_tab = 1;
 #define 	  IDPROG		  1
 #define 	  IDVAR		    2
 #define     IDFUNC      3
+#define     IDBLOC      6
+#define      IDGLOB     7   
+
 
 /*  Definicao dos tipos de variaveis   */
 
@@ -53,13 +56,14 @@ struct celsimb {
 	char *cadeia;
 	int tid, tvar, ndims, dims[MAXDIMS+1];
 	char inic, array, ref;
-	simbolo prox;
+	simbolo prox, escopo;
 };
 
 /*  Variaveis globais para a tabela de simbolos e analise semantica */
 
 simbolo tabsimb[NCLASSHASH];
 simbolo simb;
+simbolo escopo;
 int tipocorrente;
 
 /*
@@ -69,9 +73,9 @@ int tipocorrente;
 
 void InicTabSimb (void);
 void ImprimeTabSimb (void);
-simbolo InsereSimb (char *, int, int);
+simbolo InsereSimb (char *, int, int,simbolo);
 int hash (char *);
-simbolo ProcuraSimb (char *);
+simbolo ProcuraSimb (char *,simbolo);
 void DeclaracaoRepetida (char *);
 void TipoInadequado (char *);
 void NaoDeclarado (char *);
@@ -146,8 +150,9 @@ void NaoEsperado (char *);
 
 %%
 Prog         :       {InicTabSimb ();}
+                     {escopo = InsereSimb ("##global", IDGLOB, NAOVAR, NULL);}    
                      PROGRAM {printf("program ");}
-                     ID {printf("%s ",$4); InsereSimb ($4, IDPROG, NAOVAR);}
+                     ID {printf("%s ",$5); InsereSimb ($5, IDPROG, NAOVAR, escopo);}
                      OPBRACE {printf("\{\n"); tab++;}
                      GlobDecls Functions
                      CLBRACE
@@ -179,11 +184,11 @@ ElemList     :       Elem
              ;
 Elem         :       ID
                      {
-                         printf("%s",$1);
-                         if (ProcuraSimb ($1)  !=  NULL)
-                             DeclaracaoRepetida ($1);
+                         printf("%s ",$1);
+                         if (ProcuraSimb ($1,escopo)  !=  NULL){
+                             DeclaracaoRepetida ($1);}
                          else{
-                            simb = InsereSimb ($1, IDVAR, tipocorrente);
+                            simb = InsereSimb ($1, IDVAR, tipocorrente,escopo);
                             simb->array = FALSO; simb->ndims = 0;
                          }
                      }
@@ -206,11 +211,11 @@ Functions    :       FUNCTIONS {tab--; tabular(); tab++; printf("functions");} C
 FuncList     :       Function
              |       FuncList Function
              ;
-Function     :       Header OPBRACE {printf("\{\n"); tab++;}
-                     LocDecls Stats CLBRACE {tab--; tabular(); printf("}\n");}
+Function     :       Header  OPBRACE {printf("\{\n"); tab++;}
+                     LocDecls Stats CLBRACE {escopo = escopo->escopo;} {tab--; tabular(); printf("}\n");}
              ;
-Header       :       MAIN {tabular(); printf("main ");}
-             |       Type ID {printf("%s ",$2);} OPPAR {printf("\(");} Params CLPAR {printf(") ");}
+Header       :       MAIN {escopo = InsereSimb ("##main", IDFUNC, tipocorrente, escopo);}  {tabular(); printf("main ");}
+             |       Type ID {escopo = InsereSimb ($2, IDFUNC, tipocorrente, escopo); printf("%s ",$2);} OPPAR {printf("\(");} Params CLPAR {printf(") ");}
              ;
 Params       :
              |       ParamList
@@ -218,7 +223,15 @@ Params       :
 ParamList    :       Parameter
              |       ParamList COMMA {printf(", ");} Parameter
              ;
-Parameter    :       Type ID {printf("%s ",$2);}
+Parameter    :       Type ID {
+                         printf("%s ",$2);
+                         if (ProcuraSimb ($2,escopo)  !=  NULL){
+                             DeclaracaoRepetida ($2);}
+                         else{
+                            simb = InsereSimb ($2, IDVAR, tipocorrente,escopo);
+                            simb->array = FALSO; simb->ndims = 0;
+                         }
+                         }
              ;
 LocDecls     :
              |       LOCAL {tab--; tabular(); tab++; printf("local");} COLON {printf(":\n");} DeclList
@@ -430,7 +443,14 @@ Factor       :       Variable {
 Variable     :       ID
                      {
                        printf ("%s ", $1);
-                       simb = ProcuraSimb ($1);
+                       simbolo escaux; 
+                       escaux = escopo;
+                       simb = ProcuraSimb ($1, escaux);
+                       while (escaux && !simb) {
+                            escaux = escaux->escopo;
+                            if (escaux)
+                                simb = ProcuraSimb ($1, escaux);
+                        } 
                        if (simb == NULL)   NaoDeclarado ($1);
                        else if (simb->tid != IDVAR) TipoInadequado ($1);
                        $<simb>$ = simb;
@@ -495,10 +515,10 @@ void InicTabSimb () {
 	Caso contrario, retorna NULL.
  */
 
-simbolo ProcuraSimb (char *cadeia) {
+simbolo ProcuraSimb (char *cadeia, simbolo esc) {
 	simbolo s; int i;
 	i = hash (cadeia);
-	for (s = tabsimb[i]; (s!=NULL) && strcmp(cadeia, s->cadeia);
+	for (s = tabsimb[i]; (s!=NULL) && (strcmp(cadeia, s->cadeia)||esc != s->escopo);
 		s = s->prox);
 	return s;
 }
@@ -509,7 +529,7 @@ simbolo ProcuraSimb (char *cadeia) {
 	tipo de variavel; Retorna um ponteiro para a celula inserida
  */
 
-simbolo InsereSimb (char *cadeia, int tid, int tvar) {
+simbolo InsereSimb (char *cadeia, int tid, int tvar, simbolo esc) {
 	int i; simbolo aux, s;
 	i = hash (cadeia); aux = tabsimb[i];
 	s = tabsimb[i] = (simbolo) malloc (sizeof (celsimb));
@@ -517,7 +537,8 @@ simbolo InsereSimb (char *cadeia, int tid, int tvar) {
 	strcpy (s->cadeia, cadeia);
 	s->tid = tid;		s->tvar = tvar;
 	s->inic = FALSO;	s->ref = FALSO;
-	s->prox = aux;	return s;
+	s->prox = aux;	    s->escopo = esc;
+    return s;
 }
 
 /*
