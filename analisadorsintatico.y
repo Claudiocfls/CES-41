@@ -192,7 +192,7 @@ Elem         :       ID
 Dims         :
              |       OPBRAK
                      {printf("\[");}
-                     DimList CLBRAK {printf("]");simb->array = VERDADE}
+                     DimList CLBRAK {printf("]");simb->array = VERDADE;}
              ;
 DimList      :       INTCT {printf("%d",$1);if ($1 <= 0) Esperado ("Valor inteiro positivo");
                      simb->ndims++; simb->dims[simb->ndims] = $1;}
@@ -552,11 +552,11 @@ void ImprimeTabSimb () {
                             printf ("  %d", s->dims[j]);
                     }
                 }
-
-                }
-				printf(")\n");
-			}
+                printf(")\n");
+            }
+				
 		}
+    
 }
 
 void VerificaInicRef () {
@@ -599,4 +599,5 @@ void Esperado (char *s) {
 void NaoEsperado (char *s) {
     printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
 }
+
 

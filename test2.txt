@@ -1,0 +1,28 @@
+program AnaliseDeTexto {
+
+global:
+	char nomes[50,10,10], palavra[10];
+	int aki[10];
+	int ntab;
+
+functions:
+
+main {
+
+local:
+	int i;
+statements:
+	i[0] <- 10;
+	ntab <- 0;
+	write ("Nova palavra? (s/n): ");
+	nomes[5,5,100] <- 'c';
+	palavra[0] <- 'a' ;
+	palavra[1] <- 'b';
+	aki[0] <- 9;
+	aki <- 9;
+	aki[2] <- 9;
+	aki[3] <- 9;
+	aki[11,1] <- '9';
+}
+
+}
