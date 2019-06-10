@@ -35,7 +35,6 @@ int control_tab = 1;
 #define	    NCLASSHASH	23
 #define	    VERDADE		  1
 #define	    FALSO		    0
-#define     MAXDIMS     10 
 
 /*  Strings para nomes dos tipos de identificadores  */
 
@@ -51,8 +50,8 @@ typedef struct celsimb celsimb;
 typedef celsimb *simbolo;
 struct celsimb {
 	char *cadeia;
-	int tid, tvar, ndims, dims[MAXDIMS+1];
-	char inic, array, ref;
+	int tid, tvar;
+	char inic, ref;
 	simbolo prox;
 };
 
@@ -77,10 +76,6 @@ void TipoInadequado (char *);
 void NaoDeclarado (char *);
 void VerificaInicRef (void);
 void Incompatibilidade (char *);
-void Esperado (char *);
-void NaoEsperado (char *);
-
-
 
 %}
 
@@ -91,12 +86,10 @@ void NaoEsperado (char *);
 	char carac;
 	simbolo simb;
 	int tipoexpr;
-    int nsubscr;
 }
 %type	     <simb>	            Variable
 %type 	   <tipoexpr> 	      Expression  AuxExpr1  AuxExpr2
                               AuxExpr3   AuxExpr4   Term   Factor
-%type   <nsubscr>      Subscripts  SubscrList
 %token                        ELSE
 %token                        IF
 %token                        WHILE
@@ -182,24 +175,18 @@ Elem         :       ID
                          printf("%s",$1);
                          if (ProcuraSimb ($1)  !=  NULL)
                              DeclaracaoRepetida ($1);
-                         else{
-                            simb = InsereSimb ($1, IDVAR, tipocorrente);
-                            simb->array = FALSO; simb->ndims = 0;
-                         }
+                         else
+                             InsereSimb ($1,  IDVAR,  tipocorrente);
                      }
                      Dims
              ;
 Dims         :
              |       OPBRAK
                      {printf("\[");}
-                     DimList CLBRAK {printf("]");simb->array = VERDADE}
+                     DimList CLBRAK {printf("]");}
              ;
-DimList      :       INTCT {printf("%d",$1);if ($1 <= 0) Esperado ("Valor inteiro positivo");
-                     simb->ndims++; simb->dims[simb->ndims] = $1;}
-             |       DimList COMMA {printf(", ");} INTCT {printf("%d",$4);if ($4 <= 0) 
-                     Esperado ("Valor inteiro positivo");
-                     simb->ndims++; simb->dims[simb->ndims] = $4;
-}
+DimList      :       INTCT {printf("%d",$1);}
+             |       DimList COMMA {printf(", ");} INTCT {printf("%d",$4);}
              ;
 Functions    :       FUNCTIONS {tab--; tabular(); tab++; printf("functions");} COLON {printf(":\n");} FuncList
              ;
@@ -434,35 +421,14 @@ Variable     :       ID
                        if (simb == NULL)   NaoDeclarado ($1);
                        else if (simb->tid != IDVAR) TipoInadequado ($1);
                        $<simb>$ = simb;
-                     } Subscripts {
-                        $$ = $<simb>2;
-                        if ($$ != NULL) {
-                            if ($$->array == FALSO && $3 > 0)
-                                    NaoEsperado ("Subscrito\(s)");
-                            else if ($$->array == VERDADE && $3 == 0)
-                                Esperado ("Subscrito\(s)");
-                            else if ($$->ndims != $3)
-                                Incompatibilidade ("Numero de subscritos incompativel com declaracao");
-                        }
-                    }
+                     } Subscripts {$$ = $<simb>2;}
              ;
-Subscripts   :      {$$ = 0;}
+Subscripts   :
              |       OPBRAK {printf("\[");}
-                     SubscrList CLBRAK {printf("]");$$ = $3;}
-
+                     SubscrList CLBRAK {printf("]");}
              ;
 SubscrList   :       AuxExpr4
-                     {
-                        if ($1 != INTEIRO && $1 != CARACTERE)
-                            Incompatibilidade ("Tipo inadequado para subscrito");
-                        $$ = 1;
-                     }
              |       SubscrList COMMA {printf(",");} AuxExpr4
-                     {
-                        if ($4 != INTEIRO && $4 != CARACTERE)
-                            Incompatibilidade ("Tipo inadequado para subscrito");
-                        $$ = $1 + 1;
-                     }
              ;
 %%
 #include "lex.yy.c"
@@ -542,18 +508,9 @@ void ImprimeTabSimb () {
 			printf ("Classe %d:\n", i);
 			for (s = tabsimb[i]; s!=NULL; s = s->prox){
 				printf ("  (%s, %s", s->cadeia,  nometipid[s->tid]);
-				if (s->tid == IDVAR){
+				if (s->tid == IDVAR)
 					printf (", %s, %d, %d",
 						nometipvar[s->tvar], s->inic, s->ref);
-                    if (s->array == VERDADE) { 
-                        int j;
-                        printf (", EH ARRAY\n\tndims = %d, dimensoes:", s->ndims);
-                        for (j = 1; j <= s->ndims; j++)
-                            printf ("  %d", s->dims[j]);
-                    }
-                }
-
-                }
 				printf(")\n");
 			}
 		}
@@ -592,11 +549,3 @@ void TipoInadequado (char *s) {
 void Incompatibilidade (char *s) {
     printf ("\n\n***** Incompatibilidade: %s *****\n\n", s);
 }
-void Esperado (char *s) {
-    printf ("\n\n***** Esperado: %s *****\n\n", s);
-}
-
-void NaoEsperado (char *s) {
-    printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
-}
-
