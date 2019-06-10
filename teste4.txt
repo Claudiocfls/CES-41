@@ -1,0 +1,40 @@
+/* 
+   1. operadores só admitem operandos de tipos específicos
+   Obs. esse código está semanticamente correto
+*/
+
+
+program AnaliseDeTexto {
+global :
+        int a;
+        logic boo;
+        float real;
+        int integ;
+functions:
+        
+        main {
+        local:
+                char b;
+        statements:
+                boo <- true || false;
+                boo <- true && true;
+                boo <- !true && (true || false);
+                boo <- integ > integ;
+                boo <- integ >= integ;
+                boo <- integ < integ;
+                boo <- integ <= real;
+                real <- b % 2;
+                real <- integ % 3;
+                real <- integ % 'c';
+                integ <- ~integ;
+                real <- ~'c';
+                integ <- integ + integ;
+                integ <- 'c' - 2;
+                boo <- true = false;
+                boo <- '2' = 2;
+                a <- integ / integ;
+                b <- 2;
+                integ <- 2*integ;
+                
+        }
+}

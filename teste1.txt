@@ -1,0 +1,45 @@
+/*
+   1. identificadores devem ser declarados antes do uso
+   2. identificadores não podem ser declarados duas vezes 
+      no mesmo escopo mas pode ser declarado em escopos diferentes
+   3. uma funçao não pode ter o mesmo nome de uma variável global
+   4. tipos de variáveis são: inteiro, real, caractere ou lógico
+   5. toda variavel escalar deve ser inicializada e referenciada
+*/
+
+
+program AnaliseDeTexto {
+global :
+        void vazio;
+	int a;
+	int c;
+	char d;
+	int stack;
+	int i,j;
+functions:
+	void Inserir (  int posic ) {
+        local:
+                char i , j ;
+                logic fim ;
+        statements:
+                ff  <- ff  + 1;
+                
+        }
+	void stack (   ) {
+        local:
+               int m; 
+        statements:
+                m <- 2 + i;                
+        }
+
+        main {
+        local:
+                int i , posic ;
+                char c ;
+                logic fim ;
+        statements:
+		read(f);
+                write("Nova palavra? (s/n): ");
+                read(c) ;
+        }
+}

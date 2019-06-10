@@ -1,0 +1,51 @@
+/*
+   1. expressoes dos comandos if, while e do-while devem ser logicas ou relacionais;
+   2. a variavel de inicializacao do for deve ser escalar inteira ou caractere;
+   3. a variavel de atualizacao do for deve ser a mesma da inicializacao;
+*/
+
+
+program AnaliseDeTexto {
+global :
+        int i,a;
+functions:
+        main {
+        local:
+                char c;
+                logic fim;
+                int j;
+        statements:
+                while(c = 2 || c = 3) a <- 1;
+                while(a > 2) a <- 1;
+                while(a > 2 && (true = false)) a <- 1;
+                while(true || true) a <- 1;
+                while(true && true || false && !(true = false)) a <- 1;
+                while(true) a <- 1;
+                while(2+2) a <- 1;
+                while(true) a <- 1;
+                if(c = 2 || c = 3) a <- 1;
+                if(a > 2) a <- 1;
+                if(a > 2 && (true = false)) a <- 1;
+                if(true || true) a <- 1;
+                if(true && true || false && !(true = false)) a <- 1;
+                if(true) a <- 1;
+                if(2+2) a <- 1;
+                if(true) a <- 1;
+                do{a <- 1;} while(c = 2 || c = 3);
+                do{a <- 1;} while(a > 2);
+                do{a <- 1;} while(a > 2 && (true = false));
+                do{a <- 1;} while(true || true);
+                do{a <- 1;} while(true && true || false && !(true = false));
+                do{a <- 1;} while(true);
+                do{a <- 1;} while(2+2);
+                do{a <- 1;} while(true);
+                for(i <- 1; true && false; i <- i + 1) a <- 2;
+                for(i <- 2 + 3; true && false; i <- i + 1) a <- 2;
+                for(c <- 'c'; true && false; c <- c + 'a') a <- 2;
+                for(fim <- true; true && false; fim <- false) a <- 2;
+                for(fim <- 2 > 4; true && false; fim <- false) a <- 2;
+                for(i <- 1; true && false; j <- j + 1) a <- 2; /*DEVE DAR ERRO*/
+                
+        }
+
+}
