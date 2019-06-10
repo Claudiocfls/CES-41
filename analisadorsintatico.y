@@ -22,7 +22,7 @@ int control_tab = 1;
 #define 	  IDVAR		    2
 #define     IDFUNC      3
 #define     IDBLOC      6
-#define      IDGLOB     7   
+#define     IDGLOB      7
 
 
 /*  Definicao dos tipos de variaveis   */
@@ -38,11 +38,11 @@ int control_tab = 1;
 #define	    NCLASSHASH	23
 #define	    VERDADE		  1
 #define	    FALSO		    0
-#define     MAXDIMS     10 
+#define     MAXDIMS     10
 
 /*  Strings para nomes dos tipos de identificadores  */
 
-char *nometipid[3] = {" ", "IDPROG", "IDVAR"};
+char *nometipid[4] = {" ", "IDPROG", "IDVAR", "IDFUNC"};
 
 /*  Strings para nomes dos tipos de variaveis  */
 
@@ -62,14 +62,13 @@ struct celsimb {
 /*  Variaveis globais para a tabela de simbolos e analise semantica */
 
 simbolo tabsimb[NCLASSHASH];
-simbolo simb;
+simbolo simb, tempsimb;
 simbolo escopo;
 int tipocorrente;
 
 /*
-	Prototipos das funcoes para a tabela de simbolos
-    	e analise semantica
- */
+	Prototipos das funcoes para a tabela de simbolos e analise semantica
+*/
 
 void InicTabSimb (void);
 void ImprimeTabSimb (void);
@@ -95,12 +94,12 @@ void NaoEsperado (char *);
 	char carac;
 	simbolo simb;
 	int tipoexpr;
-    int nsubscr;
+  int nsubscr;
 }
 %type	     <simb>	            Variable
 %type 	   <tipoexpr> 	      Expression  AuxExpr1  AuxExpr2
-                              AuxExpr3   AuxExpr4   Term   Factor
-%type   <nsubscr>      Subscripts  SubscrList
+                              AuxExpr3   AuxExpr4   Term   Factor FuncCall
+%type      <nsubscr>          Subscripts  SubscrList
 %token                        ELSE
 %token                        IF
 %token                        WHILE
@@ -150,7 +149,7 @@ void NaoEsperado (char *);
 
 %%
 Prog         :       {InicTabSimb ();}
-                     {escopo = InsereSimb ("##global", IDGLOB, NAOVAR, NULL);}    
+                     {escopo = InsereSimb ("##global", IDGLOB, NAOVAR, NULL);}
                      PROGRAM {printf("program ");}
                      ID {printf("%s ",$5); InsereSimb ($5, IDPROG, NAOVAR, escopo);}
                      OPBRACE {printf("\{\n"); tab++;}
@@ -171,13 +170,18 @@ GlobDecls    :
 DeclList     :       Declaration
              |       DeclList Declaration
              ;
-Declaration  :       Type ElemList SCOLON {printf(";\n");}
+Declaration  :       Type ElemList SCOLON
+                     {
+											 if(tipocorrente == VOID)
+											   printf ("\n\n***** Variavel declarada com tipo void *****\n\n");
+											 printf(";\n");
+										 }
              ;
-Type         :       INT {tabular(); printf("int "); tipocorrente = INTEIRO;}
+Type         :       INT {tabular(); printf("int ");     tipocorrente = INTEIRO;}
              |       FLOAT {tabular(); printf("float "); tipocorrente = REAL;}
-             |       CHAR {tabular(); printf("char "); tipocorrente = CARACTERE;}
+             |       CHAR {tabular(); printf("char ");   tipocorrente = CARACTERE;}
              |       LOGIC {tabular(); printf("logic "); tipocorrente = LOGICO;}
-             |       VOID {tabular(); printf("void ");}
+             |       VOID {tabular(); printf("void ");   tipocorrente = VOID;}
              ;
 ElemList     :       Elem
              |       ElemList COMMA {printf(", ");} Elem
@@ -199,12 +203,21 @@ Dims         :
                      {printf("\[");}
                      DimList CLBRAK {printf("]");simb->array = VERDADE;}
              ;
-DimList      :       INTCT {printf("%d",$1);if ($1 <= 0) Esperado ("Valor inteiro positivo");
-                     simb->ndims++; simb->dims[simb->ndims] = $1;}
-             |       DimList COMMA {printf(", ");} INTCT {printf("%d",$4);if ($4 <= 0) 
-                     Esperado ("Valor inteiro positivo");
-                     simb->ndims++; simb->dims[simb->ndims] = $4;
-}
+DimList      :       INTCT
+                     {
+											 printf("%d",$1);
+											 if ($1 <= 0)
+											    Esperado ("Valor inteiro positivo");
+                       simb->ndims++;
+											 simb->dims[simb->ndims] = $1;
+										 }
+             |       DimList COMMA {printf(", ");} INTCT
+						         {
+											 printf("%d",$4);
+											 if ($4 <= 0)
+                          Esperado ("Valor inteiro positivo");
+                       simb->ndims++; simb->dims[simb->ndims] = $4;
+                     }
              ;
 Functions    :       FUNCTIONS {tab--; tabular(); tab++; printf("functions");} COLON {printf(":\n");} FuncList
              ;
@@ -214,8 +227,28 @@ FuncList     :       Function
 Function     :       Header  OPBRACE {printf("\{\n"); tab++;}
                      LocDecls Stats CLBRACE {escopo = escopo->escopo;} {tab--; tabular(); printf("}\n");}
              ;
-Header       :       MAIN {escopo = InsereSimb ("##main", IDFUNC, tipocorrente, escopo);}  {tabular(); printf("main ");}
-             |       Type ID {escopo = InsereSimb ($2, IDFUNC, tipocorrente, escopo); printf("%s ",$2);} OPPAR {printf("\(");} Params CLPAR {printf(") ");}
+Header       :       MAIN
+                     {
+											 if (ProcuraSimb ("##main",escopo)  !=  NULL){
+													 DeclaracaoRepetida ("##main");
+											 } else {
+											     escopo = InsereSimb ("##main", IDFUNC, tipocorrente, escopo);
+											 }
+										 }
+										 {tabular(); printf("main ");}
+             |       Type ID
+						         {
+											 if (ProcuraSimb ($2,escopo)  !=  NULL){
+													 DeclaracaoRepetida ($2);
+											 } else {
+												   if (strcmp(escopo->cadeia,$2) == 0)
+														 printf("\n\n***** possivel recursao detectada: recursoes nao sao permitidas  *****\n\n");
+													 else
+												     escopo = InsereSimb ($2, IDFUNC, tipocorrente, escopo);
+											 }
+											 printf("%s ",$2);
+										 }
+										 OPPAR {printf("\(");} Params CLPAR {printf(") ");}
              ;
 Params       :
              |       ParamList
@@ -229,9 +262,10 @@ Parameter    :       Type ID {
                              DeclaracaoRepetida ($2);}
                          else{
                             simb = InsereSimb ($2, IDVAR, tipocorrente,escopo);
+														simb->inic = VERDADE;
                             simb->array = FALSO; simb->ndims = 0;
                          }
-                         }
+                     }
              ;
 LocDecls     :
              |       LOCAL {tab--; tabular(); tab++; printf("local");} COLON {printf(":\n");} DeclList
@@ -260,32 +294,59 @@ CompStat     :       OPBRACE
              ;
 IfStat       :       IF {tabular(); printf("if");}
                      OPPAR {printf("\(");} Expression
-                     CLPAR {printf(") "); no_tab();} Statement ElseStat
+                     CLPAR
+										 {
+											 printf(") ");
+										   if($5 != LOGICO)
+										     printf("\n\n**** expressao nao eh do tipo logico ****\n\n");
+										   no_tab();
+									   } Statement ElseStat
              ;
 ElseStat     :
              |       ELSE {tabular(); printf("else "); no_tab();} Statement
              ;
 WhileStat    :       WHILE {tabular(); printf("while");} OPPAR {printf("\(");} Expression
-                     CLPAR {printf(") "); no_tab();} Statement
+                     CLPAR
+										 {
+											 printf(") ");
+											 if($5 != LOGICO)
+										     printf("\n\n**** expressao nao eh do tipo logico ****\n\n");
+											 no_tab();
+										 } Statement
              ;
 DoStat       :       DO {tabular(); printf("do "); no_tab();} Statement
                      WHILE {tabular(); printf("while");} OPPAR {printf("\(");} Expression
-                     CLPAR {printf(")");}
+                     CLPAR
+										 {
+											 printf(")");
+											 if($8 != LOGICO)
+										     printf("\n\n**** expressao nao eh do tipo logico ****\n\n");
+										 }
                      SCOLON {printf(";\n");}
              ;
 ForStat      :       FOR {tabular(); printf("for");}
                      OPPAR {printf("\(");} Variable
-                     ASSIGN {printf(" <- ");} Expression
-                     SCOLON {printf("; ");} Expression
+										 {
+											 {if  ($5 != NULL) $5->inic = $5->ref = VERDADE;}
+											 if($5 != NULL && $5->array) {
+												 printf("\n\n**** variavel de inicializacao nao pode ser variavel indexada ****\n\n");
+											 }
+											 else if($5 != NULL &&  $5->tvar != INTEIRO && $5->tvar != CARACTERE) {
+												 printf("\n\n**** variavel de inicializacao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");
+											 }
+										 }
+                     ASSIGN {printf(" <- ");} Expression {if($9 != INTEIRO && $9 != CARACTERE) printf("\n\n**** expressao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");}
+                     SCOLON {printf("; ");} Expression {if($13 != LOGICO) printf("\n\n**** expressao deve ser do tipo LOGICO ****\n\n");}
                      SCOLON {printf("; ");} Variable
                      ASSIGN {printf(" <- ");}
-                     Expression
+                     Expression {if($20 != INTEIRO && $20 != CARACTERE) printf("\n\n**** expressao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");}
                      CLPAR {printf(") ");no_tab();}
                      Statement
              ;
 ReadStat     :       READ {tabular(); printf("read");} OPPAR {printf("\(");} ReadList CLPAR {printf(") ");} SCOLON {printf(";\n"); }
              ;
 ReadList     :       Variable
+                     {if  ($1 != NULL) $1->inic = $1->ref = VERDADE;}
              |       ReadList COMMA {printf(", ");} Variable
              ;
 WriteStat    :       WRITE {tabular(); printf("write");} OPPAR {printf("\(");} WriteList CLPAR {printf(")");} SCOLON {printf(";\n"); }
@@ -296,15 +357,51 @@ WriteList    :       WriteElem
 WriteElem    :       STRING {printf("%s",$1);}
              |       Expression
              ;
-CallStat     :       CALL {tabular(); printf("call ");} FuncCall SCOLON {printf(";\n");}
+CallStat     :       CALL {tabular(); printf("call ");} FuncCall
+                     {
+											 if($3 != VOID) {
+												 printf("\n\n**** funcoes chamadas por CALL devem ser do tipo void %d****\n\n",$3 );
+											 }
+
+										 }
+                     SCOLON {printf(";\n");}
              ;
-FuncCall     :       ID {printf("%s",$1);} OPPAR {printf("\(");} Arguments CLPAR {printf(") ");}
+FuncCall     :       ID
+                     {
+											 simbolo escaux;
+                       escaux = escopo;
+                       simb = ProcuraSimb ($1, escaux);
+                       while (escaux && !simb) {
+                            escaux = escaux->escopo;
+                            if (escaux)
+                                simb = ProcuraSimb ($1, escaux);
+                       }
+	                     if(!simb) printf("\n\n**** funcao nao declarada %d %s****\n\n",simb,$1);
+											 if(simb && simb->tid != IDFUNC) printf("\n\n**** variavel %s nao eh uma funcao ****\n\n",$1);
+											 tempsimb = simb;
+                     }
+										 {printf("%s",$1);} OPPAR {printf("\(");} Arguments CLPAR {printf(") ");}
+										 {
+											 if (tempsimb) $$ = tempsimb->tvar;
+										 }
              ;
 Arguments    :
              |       ExprList
              ;
-ReturnStat   :       RETURN {tabular(); printf("return ");} SCOLON {printf(";\n");}
-             |       RETURN {tabular(); printf("return ");} Expression SCOLON {printf(";\n");}
+ReturnStat   :       RETURN {tabular(); printf("return ");}
+                     {
+											 if(escopo->tvar != VOID) {
+												 printf("\n\n *** a funcao deve retornar uma expressao *** \n\n");
+											 }
+										 }
+										 SCOLON {printf(";\n");}
+             |       RETURN {tabular(); printf("return ");} Expression
+										 {
+											 if(escopo->tvar == VOID) {
+												 printf("\n\n *** a funcao nao deve retornar nenhuma expressao *** \n\n");
+											 }
+										 }
+										 SCOLON {printf(";\n");}
              ;
 AssignStat   :       {tabular();}
                      Variable
@@ -313,12 +410,17 @@ AssignStat   :       {tabular();}
                      Expression SCOLON
                      {
                          printf (";\n");
-                         if ($2 != NULL)
-                             if ((($2->tvar == INTEIRO || $2->tvar == CARACTERE) &&
-                                 ($6 == REAL || $6 == LOGICO)) ||
-                                 ($2->tvar == REAL && $6 == LOGICO) ||
-                                 ($2->tvar == LOGICO && $6 != LOGICO))
-                                 Incompatibilidade ("Lado direito de comando de atribuicao improprio");
+                         if ($2 != NULL){
+														 int err = 0;
+														 switch ($2->tvar) {
+														 	 case INTEIRO: if($6 != INTEIRO && $6 != CARACTERE) err = 1; break;
+															 case REAL: if($6 != INTEIRO && $6 != CARACTERE && $6 != REAL) err = 1; break;
+															 case CARACTERE: if($6 != INTEIRO && $6 != CARACTERE) err = 1; break;
+															 case LOGICO: if($6 != LOGICO) err = 1; break;
+														 }
+														 if(err)
+														   Incompatibilidade ("Lado direito de comando de atribuicao improprio");
+												 }
                      }
              ;
 ExprList     :       Expression
@@ -438,19 +540,23 @@ Factor       :       Variable {
                      {printf(") ");}
                      CLPAR {$$ = $3;}
              |       FuncCall
+						         {
+							          if($1 != INTEIRO && $1 != CARACTERE && $1 != REAL && $1 != LOGICO)
+												   printf("\n\n **** a funcao deve retornar algum valor **** \n\n");
+						         }
              ;
 
 Variable     :       ID
                      {
                        printf ("%s ", $1);
-                       simbolo escaux; 
+                       simbolo escaux;
                        escaux = escopo;
                        simb = ProcuraSimb ($1, escaux);
                        while (escaux && !simb) {
                             escaux = escaux->escopo;
                             if (escaux)
                                 simb = ProcuraSimb ($1, escaux);
-                        } 
+                        }
                        if (simb == NULL)   NaoDeclarado ($1);
                        else if (simb->tid != IDVAR) TipoInadequado ($1);
                        $<simb>$ = simb;
@@ -518,8 +624,7 @@ void InicTabSimb () {
 simbolo ProcuraSimb (char *cadeia, simbolo esc) {
 	simbolo s; int i;
 	i = hash (cadeia);
-	for (s = tabsimb[i]; (s!=NULL) && (strcmp(cadeia, s->cadeia)||esc != s->escopo);
-		s = s->prox);
+	for (s = tabsimb[i]; (s!=NULL) && (strcmp(cadeia, s->cadeia) || esc != s->escopo); s = s->prox);
 	return s;
 }
 
@@ -564,20 +669,23 @@ void ImprimeTabSimb () {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox){
 				printf ("  (%s, %s", s->cadeia,  nometipid[s->tid]);
 				if (s->tid == IDVAR){
-					printf (", %s, %d, %d",
-						nometipvar[s->tvar], s->inic, s->ref);
-                    if (s->array == VERDADE) { 
-                        int j;
-                        printf (", EH ARRAY\n\tndims = %d, dimensoes:", s->ndims);
-                        for (j = 1; j <= s->ndims; j++)
-                            printf ("  %d", s->dims[j]);
-                    }
-                }
-                printf(")\n");
-            }
-				
-		}
-    
+					printf (", %s, %d, %d", nometipvar[s->tvar], s->inic, s->ref);
+          if (s->array == VERDADE) {
+            int j;
+            printf (", EH ARRAY\n\tndims = %d, dimensoes:", s->ndims);
+            for (j = 1; j <= s->ndims; j++)
+              printf ("  %d", s->dims[j]);
+          }
+        } else if(s->tid == IDFUNC) {
+					if(s->tvar < 0 || s->tvar > 4){
+							printf (", VOID");
+					} else
+						printf (", %s", nometipvar[s->tvar]);
+				}
+
+        printf(")\n");
+     }
+	 }
 }
 
 void VerificaInicRef () {
@@ -589,9 +697,9 @@ void VerificaInicRef () {
 			for (s = tabsimb[i]; s!=NULL; s = s->prox)
 				if (s->tid == IDVAR) {
 					if (s->inic == FALSO)
-						printf ("%s: Nao Inicializada\n", s->cadeia);
+						printf ("%s (%s): Nao Inicializada\n", s->cadeia, s->escopo->cadeia);
 					if (s->ref == FALSO)
-						printf ("%s: Nao Referenciada\n", s->cadeia);
+						printf ("%s (%s): Nao Referenciada\n", s->cadeia, s->escopo->cadeia);
 				}
 }
 
@@ -620,5 +728,3 @@ void Esperado (char *s) {
 void NaoEsperado (char *s) {
     printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
 }
-
-
