@@ -1,0 +1,29 @@
+/*
+   1. o numero de subscritos de uma variavel indexada deve ser igual ao seu número de dimensões declarado
+   2. os elementos de uma variavel indexada só podem ser atribuidos um de cada vez
+   3. os elementos de uma variavel indexada só podem ser lidos/escritos um de cada vez
+*/
+
+program AnaliseDeTexto {
+global :
+        int a[2], b[2];
+        int c[2,2,2];
+functions:
+        main {
+        local:
+                int i;
+        statements:
+                i <- 2;
+                b[1] <- i;
+                a[1] <- 1;
+                c[1,1,1] <- 12;
+                a <- b;
+                a[1] <- b[1];
+                write(a[1]);
+                write(a);
+                c[1,1] <- a;
+                c[1,1,1] <- 3;
+                read(a);
+                read(c[1,1,1]);
+        }
+}

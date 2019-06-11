@@ -1,0 +1,49 @@
+/*
+   1. a constante inteira usada no dimensionamento de variavel deve ser maior do que 0
+   2. deve haver compatibilidade entre os dois lados de um comando de atribuicao
+   3. variaveis escalares nao podem ter subscritos
+*/
+
+program AnaliseDeTexto {
+global :
+        int a,b;
+        float c,d;
+        logic e,f;
+        char g,h;
+functions:
+        void exp() {
+        local: 
+           int i;
+        statements:
+           a <- a + b;
+           a <- a / b;
+           a <- 'c' + g;
+           c <- c + d;
+           c <- 'c' + h;
+           c <- a + b;
+           g <- a + b;
+           g <- g + h;
+           g <- 'a';
+           e <- e || f;
+           e <- 'a';
+           e <- 2 + 3;
+           a <- e;
+           c <- true;	
+        }
+        void t(){
+        local:
+                int i;
+                int c;
+        statements:
+                c[2] <- 3;
+                i <- 2;
+        }
+        main(){
+        local:
+                int a[-2];
+                int c;
+        statements:
+                c <- 2;
+        }
+
+}

@@ -1,0 +1,90 @@
+/*
+	1. deve haver compatibilidade entre argumentos e parametros
+	2. return em funções void não retornam expressões
+	3. return em funções "não-void" retornam expressões
+	4. expressões no return devem ser compatíveis com o tipo da função
+	5. não existe recursão
+	6. funcoes não podem ser usadas como parametros
+*/
+
+program AnaliseDeTexto {
+global :
+        int i, j;
+	float k,l;
+functions:
+        int func1 (int a, float b) {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return (2+3+i)*2;
+        }
+
+	int func2 (int a, float b) {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return 2 = 3;
+        }
+
+        int func21 (int a, float b) {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return 2;
+        }
+
+	int func3 (int a, float b) {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return k;
+        }
+
+	int func4 () {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return ;
+        }
+
+	void func5 (int a, float b) {
+        local:
+           char c;
+        statements:
+           c <- 1;
+           return (2+3+i)*2;
+        }
+
+	int func6 (int a, float b) {
+        local:
+           int c;
+        statements:
+           c <- 1;
+           return func6(a,b);
+        }
+
+	int func7 (int a, float b) {
+        local:
+           int c;
+        statements:
+           c <- 1;
+           return func1(func21(a,b),b);
+        }
+
+
+        main {
+        local:
+                int a;
+        statements:
+                i <- 2;
+                j <- 2;
+                k <- 2;
+                l <- 2;
+        }
+
+}

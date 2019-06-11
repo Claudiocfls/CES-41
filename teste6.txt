@@ -1,0 +1,59 @@
+/*
+	1. só pode haver uma função main
+	2. identificador no comando call e chamada de função deve ser do tipo nome de função
+	3. funções chamadas por call devem ser do tipo void
+	4. funções chamadas normalmente não podem ser void
+	5. identificador de variável e parâmetro deve ser do tipo variável
+	6. o número de argumentos na chamada da função deve ser igual ao número de parâmetros declarados.
+*/
+
+
+program AnaliseDeTexto {
+global :
+        int func;
+functions:
+        int Procura (int a) {
+        local:
+                int i;
+                logic achou , fimteste ;
+        statements:
+                call func();
+		return i;
+        }
+
+        void Inserir (  int posic ) {
+        local:
+                int i;
+        statements:
+		i <- 2;
+		call Procura(i);
+                i <- Procura(i);
+		
+        }
+
+        void ExibirTabela () {
+        local:
+                int j;
+        statements:
+                j <- Procura(j,j);            /* DEVE DAR ERRO */
+                j <- 2;
+        }
+
+	
+        main {
+        local:
+                int i;
+        statements:
+                i <- 2;
+		
+        }
+
+	main {                                /* FUNCAO MAIN SENDO DECLARADA DUAS VEZES*/
+        local:
+                int i;
+        statements:
+                i <- 2;
+		ExibirTabela();               /* FUNCAO VOID SENDO CHAMADA NORMALMENTE */
+        }
+
+}
