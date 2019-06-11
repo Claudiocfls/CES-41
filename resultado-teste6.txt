@@ -1,0 +1,98 @@
+program AnaliseDeTexto {
+global :
+	int func ;
+functions:
+	int Procura (	int a ) {
+	local:
+		int i ;
+		logic achou , fimteste ;
+	statements:
+		call 
+
+**** variavel func nao eh uma funcao ****
+
+func() 
+
+**** funcoes chamadas por CALL devem ser do tipo void 1****
+
+;
+		return i ;
+	}
+	void Inserir (	int posic ) {
+	local:
+		int i ;
+	statements:
+		i  <- 2;
+		call Procura(i ) 
+
+**** funcoes chamadas por CALL devem ser do tipo void 1****
+
+;
+		i  <- Procura(i ) ;
+	}
+	void ExibirTabela () {
+	local:
+		int j ;
+	statements:
+		j  <- Procura(j , j ) 
+
+ *** numero de argumentos incompativeis 2 != 1*** 
+
+;
+		j  <- 2;
+	}
+	main {
+	local:
+		int i ;
+	statements:
+		i  <- 2;
+	}
+
+
+***** Declaracao Repetida: ##main *****
+
+	main {
+	local:
+		int i ;
+	statements:
+		i  <- 2;
+		call ExibirTabela() ;
+	}
+}
+
+a (Procura): Nao Referenciada
+posic (Inserir): Nao Referenciada
+i (Procura): Nao Inicializada
+fimteste (Procura): Nao Inicializada
+fimteste (Procura): Nao Referenciada
+func (##global): Nao Inicializada
+func (##global): Nao Referenciada
+achou (Procura): Nao Inicializada
+achou (Procura): Nao Referenciada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 0:
+  (ExibirTabela, IDFUNC, VOID)
+Classe 5:
+  (a, IDVAR, INTEIRO, 1, 0)
+  (##global, REAL)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+Classe 13:
+  (i, IDVAR, INTEIRO, 1, 1)
+  (i, IDVAR, INTEIRO, 1, 1)
+  (i, IDVAR, INTEIRO, 1, 1)
+  (posic, IDVAR, INTEIRO, 1, 0)
+  (i, IDVAR, INTEIRO, 0, 1)
+Classe 14:
+  (j, IDVAR, INTEIRO, 1, 1)
+  (fimteste, IDVAR, LOGICO, 0, 0)
+  (func, IDVAR, INTEIRO, 0, 0)
+Classe 19:
+  (Inserir, IDFUNC, VOID)
+  (Procura, IDFUNC, INTEIRO)
+Classe 22:
+  (achou, IDVAR, LOGICO, 0, 0)
+  (AnaliseDeTexto, IDPROG)

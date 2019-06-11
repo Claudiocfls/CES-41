@@ -53,7 +53,7 @@ functions:
                 int i;
         statements:
                 i <- 2;
-		ExibirTabela();               /* FUNCAO VOID SENDO CHAMADA NORMALMENTE */
+		call ExibirTabela();               /* FUNCAO VOID SENDO CHAMADA NORMALMENTE */
         }
 
 }

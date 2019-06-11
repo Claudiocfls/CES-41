@@ -1,0 +1,117 @@
+program AnaliseDeTexto {
+global :
+	void vazio 
+
+***** Variavel declarada com tipo void *****
+
+;
+	int a ;
+	int c ;
+	char d ;
+	int stack ;
+	int i , j ;
+functions:
+	void Inserir (	int posic ) {
+	local:
+		char i , j ;
+		logic fim ;
+	statements:
+		ff 
+
+***** Identificador Nao Declarado: ff *****
+
+ <- ff 
+
+***** Identificador Nao Declarado: ff *****
+
+ + 1
+
+***** Incompatibilidade: Operando improprio para operador aritmetico 1 *****
+
+;
+	}
+	void 
+
+***** Declaracao Repetida: stack *****
+
+stack () {
+	local:
+		int m ;
+	statements:
+		m  <- 2 + i ;
+	}
+	main {
+	local:
+		int i , posic ;
+		char c ;
+		logic fim ;
+	statements:
+		read(f 
+
+***** Identificador Nao Declarado: f *****
+
+) ;
+		write("Nova palavra? (s/n): ");
+		read(c ) ;
+	}
+}
+
+vazio (##global): Nao Inicializada
+vazio (##global): Nao Referenciada
+stack (##global): Nao Inicializada
+stack (##global): Nao Referenciada
+a (##global): Nao Inicializada
+a (##global): Nao Referenciada
+c (##global): Nao Inicializada
+c (##global): Nao Referenciada
+d (##global): Nao Inicializada
+d (##global): Nao Referenciada
+posic (##main): Nao Inicializada
+posic (##main): Nao Referenciada
+i (##main): Nao Inicializada
+i (##main): Nao Referenciada
+i (Inserir): Nao Inicializada
+i (Inserir): Nao Referenciada
+posic (Inserir): Nao Referenciada
+i (##global): Nao Inicializada
+j (Inserir): Nao Inicializada
+j (Inserir): Nao Referenciada
+j (##global): Nao Inicializada
+j (##global): Nao Referenciada
+fim (##main): Nao Inicializada
+fim (##main): Nao Referenciada
+fim (Inserir): Nao Inicializada
+fim (Inserir): Nao Referenciada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 1:
+  (vazio, IDVAR)
+Classe 5:
+  (stack, IDVAR, INTEIRO, 0, 0)
+  (a, IDVAR, INTEIRO, 0, 0)
+  (##global, REAL)
+Classe 7:
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, INTEIRO, 0, 0)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+  (d, IDVAR, CARACTERE, 0, 0)
+Classe 13:
+  (posic, IDVAR, INTEIRO, 0, 0)
+  (i, IDVAR, INTEIRO, 0, 0)
+  (i, IDVAR, CARACTERE, 0, 0)
+  (posic, IDVAR, INTEIRO, 1, 0)
+  (i, IDVAR, INTEIRO, 0, 1)
+Classe 14:
+  (j, IDVAR, CARACTERE, 0, 0)
+  (j, IDVAR, INTEIRO, 0, 0)
+Classe 17:
+  (fim, IDVAR, LOGICO, 0, 0)
+  (m, IDVAR, INTEIRO, 1, 1)
+  (fim, IDVAR, LOGICO, 0, 0)
+Classe 19:
+  (Inserir, IDFUNC, VOID)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)

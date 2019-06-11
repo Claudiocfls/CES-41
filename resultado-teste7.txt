@@ -1,0 +1,173 @@
+program AnaliseDeTexto {
+global :
+	int i , j ;
+	float k , l ;
+functions:
+	int func1 (	int a , 	float b ) {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return (2 + 3 + i )  * 2;
+	}
+	int func2 (	int a , 	float b ) {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return 2 = 3
+
+**** retorno de funcao de tipo diferente do declarado *** 
+
+;
+	}
+	int func21 (	int a , 	float b ) {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return 2;
+	}
+	int func3 (	int a , 	float b ) {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return k 
+
+**** retorno de funcao de tipo diferente do declarado *** 
+
+;
+	}
+	int func4 () {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return 
+
+ *** a funcao deve retornar uma expressao *** 
+
+;
+	}
+	void func5 (	int a , 	float b ) {
+	local:
+		char c ;
+	statements:
+		c  <- 1;
+		return (2 + 3 + i )  * 2
+
+ *** a funcao nao deve retornar nenhuma expressao *** 
+
+
+
+**** retorno de funcao de tipo diferente do declarado *** 
+
+;
+	}
+	int func6 (	int a , 	float b ) {
+	local:
+		int c ;
+	statements:
+		c  <- 1;
+		return 
+
+ **** recursoes nao sao permitidas ****
+
+func6(a , b ) ;
+	}
+	int func7 (	int a , 	float b ) {
+	local:
+		int c ;
+	statements:
+		c  <- 1;
+		return func1(
+
+*****Nao usar funcao como argumento*****
+
+func21(a , b ) , b ) 
+
+ *** numero de argumentos incompativeis 4 != 2*** 
+
+;
+	}
+	main {
+	local:
+		int a ;
+	statements:
+		i  <- 2;
+		j  <- 2;
+		k  <- 2;
+		l  <- 2;
+	}
+}
+
+a (##main): Nao Inicializada
+a (##main): Nao Referenciada
+a (func5): Nao Referenciada
+a (func3): Nao Referenciada
+a (func21): Nao Referenciada
+a (func2): Nao Referenciada
+a (func1): Nao Referenciada
+b (func5): Nao Referenciada
+b (func3): Nao Referenciada
+b (func21): Nao Referenciada
+b (func2): Nao Referenciada
+b (func1): Nao Referenciada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 0:
+  (func7, IDFUNC, INTEIRO)
+Classe 5:
+  (a, IDVAR, INTEIRO, 0, 0)
+  (a, IDVAR, INTEIRO, 1, 1)
+  (a, IDVAR, INTEIRO, 1, 1)
+  (a, IDVAR, INTEIRO, 1, 0)
+  (a, IDVAR, INTEIRO, 1, 0)
+  (a, IDVAR, INTEIRO, 1, 0)
+  (a, IDVAR, INTEIRO, 1, 0)
+  (a, IDVAR, INTEIRO, 1, 0)
+  (##global, REAL)
+Classe 6:
+  (b, IDVAR, REAL, 1, 1)
+  (b, IDVAR, REAL, 1, 1)
+  (b, IDVAR, REAL, 1, 0)
+  (b, IDVAR, REAL, 1, 0)
+  (b, IDVAR, REAL, 1, 0)
+  (b, IDVAR, REAL, 1, 0)
+  (b, IDVAR, REAL, 1, 0)
+Classe 7:
+  (c, IDVAR, INTEIRO, 1, 1)
+  (c, IDVAR, INTEIRO, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+  (c, IDVAR, CARACTERE, 1, 1)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+Classe 13:
+  (i, IDVAR, INTEIRO, 1, 1)
+Classe 14:
+  (j, IDVAR, INTEIRO, 1, 1)
+Classe 15:
+  (k, IDVAR, REAL, 1, 1)
+Classe 16:
+  (l, IDVAR, REAL, 1, 1)
+Classe 17:
+  (func1, IDFUNC, INTEIRO)
+Classe 18:
+  (func2, IDFUNC, INTEIRO)
+Classe 19:
+  (func3, IDFUNC, INTEIRO)
+Classe 20:
+  (func4, IDFUNC, INTEIRO)
+Classe 21:
+  (func5, IDFUNC, VOID)
+  (func21, IDFUNC, INTEIRO)
+Classe 22:
+  (func6, IDFUNC, INTEIRO)
+  (AnaliseDeTexto, IDPROG)

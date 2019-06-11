@@ -1,0 +1,50 @@
+program AnaliseDeTexto {
+global :
+	int a ;
+	logic boo ;
+	float real ;
+	int integ ;
+functions:
+	main {
+	local:
+		char b ;
+	statements:
+		boo  <- true || false;
+		boo  <- true && true;
+		boo  <- !true && (true || false) ;
+		boo  <- integ  > integ ;
+		boo  <- integ  >= integ ;
+		boo  <- integ  < integ ;
+		boo  <- integ  <= real ;
+		real  <- b  % 2;
+		real  <- integ  % 3;
+		real  <- integ  % 'c';
+		integ  <- ~integ ;
+		real  <- ~'c';
+		integ  <- integ  + integ ;
+		integ  <- 'c' - 2;
+		boo  <- true = false;
+		boo  <- '2' = 2;
+		a  <- integ  / integ ;
+		b  <- 2;
+		integ  <- 2 * integ ;
+	}
+}
+
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 5:
+  (a, IDVAR, INTEIRO, 1, 1)
+  (##global, REAL)
+Classe 6:
+  (b, IDVAR, CARACTERE, 1, 1)
+  (integ, IDVAR, INTEIRO, 1, 1)
+  (real, IDVAR, REAL, 1, 1)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+Classe 21:
+  (boo, IDVAR, LOGICO, 1, 1)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)

@@ -1,0 +1,123 @@
+program AnaliseDeTexto {
+global :
+	int i , a ;
+functions:
+	main {
+	local:
+		char c ;
+		logic fim ;
+		int j ;
+	statements:
+		while(c  = 2 || c  = 3) a  <- 1;
+		while(a  > 2) a  <- 1;
+		while(a  > 2 && (true = false) ) a  <- 1;
+		while(true || true) a  <- 1;
+		while(true && true || false && !(true = false) ) a  <- 1;
+		while(true) a  <- 1;
+		while(2 + 2) 
+
+**** expressao nao eh do tipo logico ****
+
+a  <- 1;
+		while(true) a  <- 1;
+		if(c  = 2 || c  = 3) a  <- 1;
+		if(a  > 2) a  <- 1;
+		if(a  > 2 && (true = false) ) a  <- 1;
+		if(true || true) a  <- 1;
+		if(true && true || false && !(true = false) ) a  <- 1;
+		if(true) a  <- 1;
+		if(2 + 2) 
+
+**** expressao nao eh do tipo logico ****
+
+a  <- 1;
+		if(true) a  <- 1;
+		do {
+			a  <- 1;
+		}
+		while(c  = 2 || c  = 3);
+		do {
+			a  <- 1;
+		}
+		while(a  > 2);
+		do {
+			a  <- 1;
+		}
+		while(a  > 2 && (true = false) );
+		do {
+			a  <- 1;
+		}
+		while(true || true);
+		do {
+			a  <- 1;
+		}
+		while(true && true || false && !(true = false) );
+		do {
+			a  <- 1;
+		}
+		while(true);
+		do {
+			a  <- 1;
+		}
+		while(2 + 2)
+
+**** expressao nao eh do tipo logico ****
+
+;
+		do {
+			a  <- 1;
+		}
+		while(true);
+		for(i  <- 1; true && false; i  <- i  + 1) a  <- 2;
+		for(i  <- 2 + 3; true && false; i  <- i  + 1) a  <- 2;
+		for(c  <- 'c'; true && false; c  <- c  + 'a') a  <- 2;
+		for(fim 
+
+**** variavel de inicializacao deve ser do tipo INTEIRO ou CARACTERE ****
+
+ <- true
+
+**** expressao deve ser do tipo INTEIRO ou CARACTERE ****
+
+; true && false; fim  <- false
+
+**** expressao deve ser do tipo INTEIRO ou CARACTERE ****
+
+) a  <- 2;
+		for(fim 
+
+**** variavel de inicializacao deve ser do tipo INTEIRO ou CARACTERE ****
+
+ <- 2 > 4
+
+**** expressao deve ser do tipo INTEIRO ou CARACTERE ****
+
+; true && false; fim  <- false
+
+**** expressao deve ser do tipo INTEIRO ou CARACTERE ****
+
+) a  <- 2;
+		for(i  <- 1; true && false; j  <- j  + 1) a  <- 2;
+	}
+}
+
+j (##main): Nao Inicializada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 5:
+  (a, IDVAR, INTEIRO, 1, 1)
+  (##global, REAL)
+Classe 7:
+  (c, IDVAR, CARACTERE, 1, 1)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+Classe 13:
+  (i, IDVAR, INTEIRO, 1, 1)
+Classe 14:
+  (j, IDVAR, INTEIRO, 0, 1)
+Classe 17:
+  (fim, IDVAR, LOGICO, 1, 1)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)

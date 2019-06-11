@@ -38,9 +38,9 @@ functions:
                 c[2] <- 3;
                 i <- 2;
         }
-        main(){
+        main{
         local:
-                int a[-2];
+                int a[2];
                 int c;
         statements:
                 c <- 2;

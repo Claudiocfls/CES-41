@@ -1,0 +1,105 @@
+program AnaliseDeTexto {
+global :
+	int a , b ;
+	float c , d ;
+	logic e , f ;
+	char g , h ;
+functions:
+	void exp () {
+	local:
+		int i ;
+	statements:
+		a  <- a  + b ;
+		a  <- a  / b ;
+		a  <- 'c' + g ;
+		c  <- c  + d ;
+		c  <- 'c' + h ;
+		c  <- a  + b ;
+		g  <- a  + b ;
+		g  <- g  + h ;
+		g  <- 'a';
+		e  <- e  || f ;
+		e  <- 'a';
+
+
+***** Incompatibilidade: Lado direito de comando de atribuicao improprio *****
+
+		e  <- 2 + 3;
+
+
+***** Incompatibilidade: Lado direito de comando de atribuicao improprio *****
+
+		a  <- e ;
+
+
+***** Incompatibilidade: Lado direito de comando de atribuicao improprio *****
+
+		c  <- true;
+
+
+***** Incompatibilidade: Lado direito de comando de atribuicao improprio *****
+
+	}
+	void t () {
+	local:
+		int i ;
+		int c ;
+	statements:
+		c [2]
+
+***** Nao Esperado: Subscrito(s) *****
+
+ <- 3;
+		i  <- 2;
+	}
+	main {
+	local:
+		int a [2];
+		int c ;
+	statements:
+		c  <- 2;
+	}
+}
+
+a (##main): Nao Inicializada
+a (##main): Nao Referenciada
+b (##global): Nao Inicializada
+d (##global): Nao Inicializada
+f (##global): Nao Inicializada
+h (##global): Nao Inicializada
+i (exp): Nao Inicializada
+i (exp): Nao Referenciada
+
+
+   TABELA  DE  SIMBOLOS:
+
+Classe 1:
+  (t, IDFUNC, VOID)
+Classe 5:
+  (a, IDVAR, INTEIRO, 0, 0, EH ARRAY
+	ndims = 1, dimensoes:  2)
+  (a, IDVAR, INTEIRO, 1, 1)
+  (##global, REAL)
+Classe 6:
+  (b, IDVAR, INTEIRO, 0, 1)
+Classe 7:
+  (c, IDVAR, INTEIRO, 1, 1)
+  (c, IDVAR, INTEIRO, 1, 1)
+  (c, IDVAR, REAL, 1, 1)
+Classe 8:
+  (##main, IDFUNC, INTEIRO)
+  (d, IDVAR, REAL, 0, 1)
+Classe 9:
+  (e, IDVAR, LOGICO, 1, 1)
+Classe 10:
+  (f, IDVAR, LOGICO, 0, 1)
+Classe 11:
+  (exp, IDFUNC, VOID)
+  (g, IDVAR, CARACTERE, 1, 1)
+Classe 12:
+  (h, IDVAR, CARACTERE, 0, 1)
+Classe 13:
+  (i, IDVAR, INTEIRO, 1, 1)
+  (i, IDVAR, INTEIRO, 0, 0)
+Classe 22:
+  (AnaliseDeTexto, IDPROG)

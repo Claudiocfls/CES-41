@@ -395,9 +395,9 @@ CallStat     :       CALL {tabular(); printf("call ");} FuncCall
              ;
 FuncCall     :       ID
                      {
-											 if (lendoarg == VERDADE)
-											 		printf("\n\n*****Nao usar funcao como argumento*****\n\n" );
-											 lendoarg = VERDADE;
+                                             if (lendoarg == VERDADE)
+                                                    printf("\n\n*****Nao usar funcao como argumento*****\n\n" );
+                                             lendoarg = VERDADE;
                        simbolo escaux;
                        escaux = escopo;
                        simb = ProcuraSimb ($1, escaux);
@@ -407,7 +407,7 @@ FuncCall     :       ID
                                 simb = ProcuraSimb ($1, escaux);
                        }
                          if(!simb) printf("\n\n**** funcao nao declarada %d %s****\n\n",simb,$1);
-												 else if(strcmp(simb->cadeia, escopo->cadeia) == 0) printf("\n\n **** recursoes nao sao permitidas ****\n\n");
+                                                 else if(strcmp(simb->cadeia, escopo->cadeia) == 0) printf("\n\n **** recursoes nao sao permitidas ****\n\n");
                                              if(simb && simb->tid != IDFUNC) printf("\n\n**** variavel %s nao eh uma funcao ****\n\n",$1);
                                              tempsimb = simb;
                         argsimb = simb;
@@ -456,9 +456,9 @@ ReturnStat   :       RETURN {tabular(); printf("return ");}
                                              if(escopo->tvar == VOID) {
                                                  printf("\n\n *** a funcao nao deve retornar nenhuma expressao *** \n\n");
                                              }
-																						 if(escopo->tvar != $3) {
-																							 printf("\n\n**** retorno de funcao de tipo diferente do declarado *** \n\n");
-																						 }
+                                                                                         if(escopo->tvar != $3) {
+                                                                                             printf("\n\n**** retorno de funcao de tipo diferente do declarado *** \n\n");
+                                                                                         }
                                          }
                                          SCOLON {printf(";\n");}
              ;
@@ -576,7 +576,7 @@ Term         :       Factor
                        else if($2 == DIV)
                          printf(" / ");
                        else
-                         printf(" % ");
+                         printf(" %% ");
                      } Factor {
                          switch ($2) {
                              case VEZES: case DIV:
@@ -652,7 +652,7 @@ Variable     :       ID
              ;
 Subscripts   :      {$$ = 0;}
              |       OPBRAK {printf("\[");}
-                     SubscrList CLBRAK {printf("]");$$ = $3;}
+                     SubscrList CLBRAK {printf("]");if ($3 < 0) printf("\n\n**** Inteiro usado na dimensao menor do que zero ****\n\n");$$ = $3;}
 
              ;
 SubscrList   :       AuxExpr4
@@ -749,7 +749,7 @@ void ImprimeTabSimb () {
             printf ("Classe %d:\n", i);
             for (s = tabsimb[i]; s!=NULL; s = s->prox){
                 printf ("  (%s, %s", s->cadeia,  nometipid[s->tid]);
-                if (s->tid == IDVAR){
+                if (s->tid == IDVAR && s->tvar < 5 && s->tvar >= 0 ){
                     printf (", %s, %d, %d", nometipvar[s->tvar], s->inic, s->ref);
           if (s->array == VERDADE) {
             int j;
