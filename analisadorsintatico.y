@@ -81,6 +81,7 @@ int chamadafuncao;
 list argaux;
 int argn;
 simbolo argsimb;
+int lendoarg;
 /*
     Prototipos das funcoes para a tabela de simbolos e analise semantica
 */
@@ -164,7 +165,7 @@ void NaoEsperado (char *);
 
 %%
 Prog         :       {InicTabSimb ();}
-                     {escopo =  InsereSimb ("##global", IDGLOB, NAOVAR, NULL);}
+                     {escopo =  InsereSimb ("##global", IDGLOB, NAOVAR, NULL);lendoarg=FALSO;}
                      PROGRAM {printf("program ");}
                      ID {printf("%s ",$5); InsereSimb ($5, IDPROG, NAOVAR, escopo);}
                      OPBRACE {printf("\{\n"); tab++;}
@@ -385,16 +386,19 @@ WriteElem    :       STRING {printf("%s",$1);}
              ;
 CallStat     :       CALL {tabular(); printf("call ");} FuncCall
                      {
-                                             if($3 != VOID) {
-                                                 printf("\n\n**** funcoes chamadas por CALL devem ser do tipo void %d****\n\n",$3 );
-                                             }
+                       if($3 != VOID) {
+                           printf("\n\n**** funcoes chamadas por CALL devem ser do tipo void %d****\n\n",$3 );
+                       }
 
                                          }
                      SCOLON {printf(";\n");}
              ;
 FuncCall     :       ID
                      {
-                                             simbolo escaux;
+											 if (lendoarg == VERDADE)
+											 		printf("\n\n*****Nao usar funcao como argumento*****\n\n" );
+											 lendoarg = VERDADE;
+                       simbolo escaux;
                        escaux = escopo;
                        simb = ProcuraSimb ($1, escaux);
                        while (escaux && !simb) {
@@ -403,30 +407,28 @@ FuncCall     :       ID
                                 simb = ProcuraSimb ($1, escaux);
                        }
                          if(!simb) printf("\n\n**** funcao nao declarada %d %s****\n\n",simb,$1);
+												 else if(strcmp(simb->cadeia, escopo->cadeia) == 0) printf("\n\n **** recursoes nao sao permitidas ****\n\n");
                                              if(simb && simb->tid != IDFUNC) printf("\n\n**** variavel %s nao eh uma funcao ****\n\n",$1);
                                              tempsimb = simb;
                         argsimb = simb;
 
                      }
-                                         {printf("%s",$1);} OPPAR {printf("\(");chamadafuncao = VERDADE;argaux = (list) malloc (sizeof (cellist));argn=0;} Arguments CLPAR {printf(") ");}
+                                         {printf("%s",$1);} OPPAR {printf("\(");chamadafuncao = VERDADE;argaux = (list) malloc (sizeof (cellist));argn=0;} Arguments CLPAR {printf(") ");lendoarg=FALSO;}
                                          {
                                              if (tempsimb) $$ = tempsimb->tvar;
                                              chamadafuncao = FALSO;
-
-
                                              //VERIFICANDO argumentos
-                                             //argn
-                                             //argaux
-                                             //argsimb
+
                                              if(argn!=argsimb->narg){
 
                                                 printf("\n\n *** numero de argumentos incompativeis %d != %d*** \n\n",argn,argsimb->narg);
                                              }else{
                                                 int p =0;
-                                                list aux1,aux2; 
+                                                list aux1,aux2;
                                                 aux1 = argaux->prox;
-                                                aux2 = argsimb->listarg->prox; 
+                                                aux2 = argsimb->listarg->prox;
                                                 while(p < argn){
+
                                                     if(aux1->var_aux != aux2->var->tvar)
                                                         printf("\n\n *** argumento com tipos incompativeis *** \n\n");
                                                     aux1=aux1->prox;
@@ -439,7 +441,7 @@ FuncCall     :       ID
 
                                          }
              ;
-Arguments    :       
+Arguments    :
              |       ExprList
              ;
 ReturnStat   :       RETURN {tabular(); printf("return ");}
@@ -454,6 +456,9 @@ ReturnStat   :       RETURN {tabular(); printf("return ");}
                                              if(escopo->tvar == VOID) {
                                                  printf("\n\n *** a funcao nao deve retornar nenhuma expressao *** \n\n");
                                              }
+																						 if(escopo->tvar != $3) {
+																							 printf("\n\n**** retorno de funcao de tipo diferente do declarado *** \n\n");
+																						 }
                                          }
                                          SCOLON {printf(";\n");}
              ;
@@ -478,6 +483,7 @@ AssignStat   :       {tabular();}
                      }
              ;
 ExprList     :       Expression {
+
                         argn = argn + 1;
                         list add = argaux;
                         while (add->prox != NULL){
@@ -612,10 +618,10 @@ Factor       :       Variable {
                      {printf(") ");}
                      CLPAR {$$ = $3;}
              |       FuncCall
-                                 {
-                                      if($1 != INTEIRO && $1 != CARACTERE && $1 != REAL && $1 != LOGICO)
-                                                   printf("\n\n **** a funcao deve retornar algum valor **** \n\n");
-                                 }
+                     {
+                          if($1 != INTEIRO && $1 != CARACTERE && $1 != REAL && $1 != LOGICO)
+                                       printf("\n\n **** a funcao deve retornar algum valor **** \n\n");
+                     }
              ;
 
 Variable     :       ID
@@ -803,3 +809,4 @@ void Esperado (char *s) {
 void NaoEsperado (char *s) {
     printf ("\n\n***** Nao Esperado: %s *****\n\n", s);
 }
+
