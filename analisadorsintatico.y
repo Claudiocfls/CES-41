@@ -82,6 +82,7 @@ list argaux;
 int argn;
 simbolo argsimb;
 int lendoarg;
+simbolo forvar;
 /*
     Prototipos das funcoes para a tabela de simbolos e analise semantica
 */
@@ -361,12 +362,13 @@ ForStat      :       FOR {tabular(); printf("for");}
                                              else if($5 != NULL &&  $5->tvar != INTEIRO && $5->tvar != CARACTERE) {
                                                  printf("\n\n**** variavel de inicializacao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");
                                              }
+                                             forvar = $5;
                                          }
                      ASSIGN {printf(" <- ");} Expression {if($9 != INTEIRO && $9 != CARACTERE) printf("\n\n**** expressao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");}
                      SCOLON {printf("; ");} Expression {if($13 != LOGICO) printf("\n\n**** expressao deve ser do tipo LOGICO ****\n\n");}
-                     SCOLON {printf("; ");} Variable
+                     SCOLON {printf("; ");} Variable {if ($17!=forvar) printf("\n\n**** variavel inicializada e de atualizacao do for sao diferentes ****\n\n");}
                      ASSIGN {printf(" <- ");}
-                     Expression {if($20 != INTEIRO && $20 != CARACTERE) printf("\n\n**** expressao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");}
+                     Expression {if($21 != INTEIRO && $21 != CARACTERE) printf("\n\n**** expressao deve ser do tipo INTEIRO ou CARACTERE ****\n\n");}
                      CLPAR {printf(") ");no_tab();}
                      Statement
              ;

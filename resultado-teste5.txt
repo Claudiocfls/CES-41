@@ -97,7 +97,11 @@ a  <- 1;
 **** expressao deve ser do tipo INTEIRO ou CARACTERE ****
 
 ) a  <- 2;
-		for(i  <- 1; true && false; j  <- j  + 1) a  <- 2;
+		for(i  <- 1; true && false; j 
+
+**** variavel inicializada e de atualizacao do for sao diferentes ****
+
+ <- j  + 1) a  <- 2;
 	}
 }
 
